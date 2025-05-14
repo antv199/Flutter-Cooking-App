@@ -109,13 +109,14 @@ class RecipeHomeCard extends StatelessWidget {
               Text('Difficulty: ${recipe.difficulty}/5'),
             ],
           ),
-          onTap: () {
-            Navigator.push(
+          onTap: () async {
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => RecipePage(recipe: recipe),
               ),
             );
+            onDelete(); // Trigger a refresh by removing and re-adding the recipe
           },
         ),
       ),

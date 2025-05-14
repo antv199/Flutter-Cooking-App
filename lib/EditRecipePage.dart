@@ -34,8 +34,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
         });
       }
     } catch (e) {
-      // Handle any errors that occur during image picking
-      debugPrint('Error picking image: $e');
+      debugPrint('Error picking image: $e'); // Log any errors
     } finally {
       _isPickingImage = false; // Reset the flag
     }
@@ -169,7 +168,8 @@ class _EditRecipePageState extends State<EditRecipePage> {
   late TextEditingController _preparationTimeController;
   String? _imageUrl;
   int _difficulty = 1;
-  bool _isPickingImage = false; // Add a flag to track the image picker state
+  int _rating = 0; // Add a field for the rating
+  bool _isPickingImage = false;
 
   @override
   void initState() {
@@ -183,6 +183,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
     );
     _imageUrl = widget.recipe.imageUrl;
     _difficulty = widget.recipe.difficulty;
+    _rating = widget.recipe.rating; // Initialize with the saved rating
   }
 
   Future<void> _pickImage() async {
@@ -199,25 +200,30 @@ class _EditRecipePageState extends State<EditRecipePage> {
         });
       }
     } catch (e) {
-      // Handle any errors that occur during image picking
-      debugPrint('Error picking image: $e');
+      debugPrint('Error picking image: $e'); // Log any errors
     } finally {
       _isPickingImage = false; // Reset the flag
     }
   }
 
-  void _saveRecipe() {
+  void _saveRecipe() async {
     if (_formKey.currentState!.validate()) {
       widget.recipe
         ..title = _titleController.text
         ..description = _descriptionController.text
         ..preparationTime = int.parse(_preparationTimeController.text)
         ..difficulty = _difficulty
+        ..rating = _rating
         ..imageUrl = _imageUrl ?? '';
 
-      widget.recipe.save(); // Save the updated recipe to Hive
+      await widget.recipe
+          .save(); // Save the updated recipe to Hive asynchronously
 
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(
+          context,
+        ); // Navigate back only if the widget is still mounted
+      }
     }
   }
 
@@ -283,6 +289,23 @@ class _EditRecipePageState extends State<EditRecipePage> {
                       },
                       child: Icon(
                         index < _difficulty ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 16),
+                const Text('Rating'),
+                Row(
+                  children: List.generate(5, (index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _rating = index + 1; // Update rating
+                        });
+                      },
+                      child: Icon(
+                        index < _rating ? Icons.star : Icons.star_border,
                         color: Colors.amber,
                       ),
                     );

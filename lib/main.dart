@@ -3,12 +3,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/RecipeClass.dart'; // Import the Recipe class
 import 'widgets/Home/RecipeHomeCard.dart'; // Import the RecipeHomeCard widget
 import 'CreateRecipePage.dart'; // Import the CreateRecipePage class
+import 'RecipePage.dart'; // Import the RecipePage class
+
+late Box<Recipe> recipeBox;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(RecipeAdapter()); // Register the Recipe adapter
-  await Hive.openBox<Recipe>('recipes'); // Open the Hive box for recipes
+  recipeBox = await Hive.openBox<Recipe>(
+    'recipes',
+  ); // Open the Hive box globally
   runApp(const MyApp());
 }
 
@@ -43,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadRecipes();
   }
 
-  void _loadRecipes() async {
-    final recipeBox = await Hive.openBox<Recipe>('recipes');
+  void _loadRecipes() {
     setState(() {
-      recipes = recipeBox.values.toList();
+      recipes =
+          recipeBox.values.toList(); // Reload recipes from the global Hive box
     });
   }
 
@@ -105,8 +110,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 recipes.removeAt(index);
               });
             },
-            onTap: () {
-              // Navigate to recipe details screen
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecipePage(recipe: recipe),
+                ),
+              );
+              _loadRecipes(); // Reload recipes after returning
             },
             onRatingChanged: (newRating) {
               updateRating(index, newRating);
@@ -120,10 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
             context,
             MaterialPageRoute(builder: (context) => const CreateRecipePage()),
           );
-          setState(() {
-            final recipeBox = Hive.box<Recipe>('recipes');
-            recipes = recipeBox.values.toList();
-          });
+          _loadRecipes(); // Reload recipes after returning
         },
         child: const Icon(Icons.add),
       ),
