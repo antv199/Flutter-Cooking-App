@@ -43,20 +43,15 @@ class RecipeHomeCard extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Difficulty: ${recipe.difficulty}'),
               Row(
                 children: List.generate(5, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      onRatingChanged(index + 1); // Update rating
-                    },
-                    child: Icon(
-                      index < recipe.rating ? Icons.star : Icons.star_border,
-                      color: Colors.amber,
-                    ),
+                  return Icon(
+                    index < recipe.difficulty ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
                   );
                 }),
               ),
+              Text('Difficulty: ${recipe.difficulty}/5'),
             ],
           ),
           onTap: () {

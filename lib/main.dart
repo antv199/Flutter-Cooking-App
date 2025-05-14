@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/RecipeClass.dart'; // Import the Recipe class
 import 'widgets/Home/RecipeHomeCard.dart'; // Import the RecipeHomeCard widget
+import 'CreateRecipePage.dart'; // Import the CreateRecipePage class
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,24 +35,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Recipe> recipes = [
-    Recipe(
-      title: 'Spaghetti Carbonara',
-      description: 'A classic Italian pasta dish.',
-      preparationTime: 20,
-      difficulty: 'Medium',
-      imageUrl: 'https://via.placeholder.com/150',
-      rating: 4,
-    ),
-    Recipe(
-      title: 'Greek Salad',
-      description: 'A fresh and healthy salad.',
-      preparationTime: 10,
-      difficulty: 'Easy',
-      imageUrl: 'https://via.placeholder.com/150',
-      rating: 5,
-    ),
-  ];
+  List<Recipe> recipes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final recipeBox = Hive.box<Recipe>('recipes');
+    recipes = recipeBox.values.toList();
+  }
 
   void updateRating(int index, int newRating) {
     setState(() {
@@ -119,7 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add functionality to navigate to a new screen for adding a recipe
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateRecipePage()),
+          ).then((_) {
+            setState(() {}); // Refresh the home screen after returning
+          });
         },
         child: const Icon(Icons.add),
       ),
