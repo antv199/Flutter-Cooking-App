@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/RecipeClass.dart'; // Import the Recipe class
 import 'widgets/Home/RecipeHomeCard.dart'; // Import the RecipeHomeCard widget
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(RecipeAdapter()); // Register the Recipe adapter
+  await Hive.openBox<Recipe>('recipes'); // Open the Hive box for recipes
   runApp(const MyApp());
 }
 
