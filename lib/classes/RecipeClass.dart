@@ -5,22 +5,22 @@ part 'RecipeClass.g.dart'; // Required for Hive type adapter generation
 @HiveType(typeId: 0)
 class Recipe extends HiveObject {
   @HiveField(0)
-  final String title;
+  String title; // Removed final
 
   @HiveField(1)
-  final String description;
+  String description; // Removed final
 
   @HiveField(2)
-  final int preparationTime;
+  int preparationTime; // Removed final
 
   @HiveField(3)
-  final int difficulty; // Int (1-5)
+  int difficulty; // Removed final
 
   @HiveField(4)
-  final String imageUrl;
+  String imageUrl; // Removed final
 
   @HiveField(5)
-  int rating; // Int (1-5)
+  int rating;
 
   Recipe({
     required this.title,

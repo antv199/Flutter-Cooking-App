@@ -40,8 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    final recipeBox = Hive.box<Recipe>('recipes');
-    recipes = recipeBox.values.toList();
+    _loadRecipes();
+  }
+
+  void _loadRecipes() async {
+    final recipeBox = await Hive.openBox<Recipe>('recipes');
+    setState(() {
+      recipes = recipeBox.values.toList();
+    });
   }
 
   void updateRating(int index, int newRating) {
@@ -109,12 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const CreateRecipePage()),
-          ).then((_) {
-            setState(() {}); // Refresh the home screen after returning
+          );
+          setState(() {
+            final recipeBox = Hive.box<Recipe>('recipes');
+            recipes = recipeBox.values.toList();
           });
         },
         child: const Icon(Icons.add),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../classes/RecipeClass.dart'; // Import the Recipe class
-import '../RecipePage/RecipePage.dart'; // Import the RecipePage
+import '../../RecipePage.dart'; // Import the RecipePage
+import '../../EditRecipePage.dart'; // Import the EditRecipePage
 
 class RecipeHomeCard extends StatelessWidget {
   final Recipe recipe;
@@ -21,13 +22,67 @@ class RecipeHomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(recipe.title),
-      onDismissed: (direction) {
-        onDelete();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${recipe.title} deleted')));
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.startToEnd) {
+          // Navigate to EditRecipePage
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditRecipePage(recipe: recipe),
+            ),
+          );
+          return false; // Prevent the card from being dismissed
+        } else if (direction == DismissDirection.endToStart) {
+          // Confirm deletion
+          final shouldDelete =
+              await showDialog<bool>(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Delete Recipe'),
+                      content: const Text(
+                        'Are you sure you want to delete this recipe?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+              ) ??
+              false;
+
+          if (shouldDelete) {
+            onDelete();
+            return true; // Allow the card to be dismissed
+          }
+          return false; // Prevent the card from being dismissed
+        }
+        return false;
       },
-      background: Container(color: Colors.red),
+      background: Container(
+        color: Colors.blue,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 16.0),
+        child: const Text(
+          'Edit',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      secondaryBackground: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 16.0),
+        child: const Text(
+          'Delete',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
       child: Card(
         child: ListTile(
           leading: CachedNetworkImage(
