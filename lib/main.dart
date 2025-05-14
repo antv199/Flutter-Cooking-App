@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/RecipeClass.dart'; // Import the Recipe class
-import 'widgets/Home/delete.dart'; // Import the RecipeHomeCard widget
+import 'widgets/Home/RecipeHomeCard.dart'; // Import the RecipeHomeCard widget
 import 'CreateRecipePage.dart'; // Import the CreateRecipePage class
 import 'RecipePage.dart'; // Import the RecipePage class
 
