@@ -10,6 +10,14 @@
 			"group": "build",
 			"problemMatcher": []
 		},
+		// flutter packages pub run build_runner build --delete-conflicting-outputs
+		{
+			"label": "Build Classes",
+			"type": "shell",
+			"command": "flutter packages pub run build_runner build --delete-conflicting-outputs",
+			"group": "build",
+			"problemMatcher": []
+		},
 		{
 			"label": "flutter run (Android)",
 			"type": "shell",
@@ -24,9 +32,15 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "flutter doctor",
+			"label": "Get Dependencies",
 			"type": "shell",
-			"command": "flutter doctor",
+			"command": "flutter pub get",
+			"problemMatcher": []
+		},
+		{
+			"label": "Doctor: Android Licenses",
+			"type": "shell",
+			"command": "flutter doctor --android-licenses",
 			"problemMatcher": []
 		}
 	]
