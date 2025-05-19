@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void updateRating(int index, int newRating) {
-    //here dsgdgsh
+    //here
     setState(() {
       recipes[index].rating = newRating;
     });
