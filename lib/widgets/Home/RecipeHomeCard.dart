@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../classes/RecipeClass.dart'; // Import the Recipe class
-import '../../RecipePage.dart'; // Import the RecipePage
+import '../RecipePage/RecipePage.dart'; // <-- Correct import
 import '../../EditRecipePage.dart'; // Import the EditRecipePage
 
 class RecipeHomeCard extends StatelessWidget {
