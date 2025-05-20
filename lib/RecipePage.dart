@@ -17,7 +17,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   final _descriptionController = TextEditingController();
   final _preparationTimeController = TextEditingController();
   String? _imageUrl;
-  int _difficulty = 1;
+  int _difficulty = 1; // Default difficulty level
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -32,7 +32,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
 
   void _saveRecipe() {
     if (_formKey.currentState!.validate()) {
-      final recipe = Recipe(
+      final newRecipe = Recipe(
         title: _titleController.text,
         description: _descriptionController.text,
         preparationTime: int.parse(_preparationTimeController.text),
@@ -40,8 +40,9 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
         imageUrl: _imageUrl ?? '',
       );
 
-      final box = Hive.box<Recipe>('recipes');
-      box.add(recipe);
+      final recipeBox = Hive.box<Recipe>('recipes');
+      recipeBox.add(newRecipe);
+
       Navigator.pop(context);
     }
   }
@@ -49,96 +50,91 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Δημιουργία Συνταγής')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      appBar: AppBar(title: const Text('Create Recipe')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(labelText: 'Title'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a title';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a description';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _preparationTimeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Preparation Time (minutes)',
                   ),
-                  elevation: 3,
-                  child: SizedBox(
-                    height: 180,
-                    width: double.infinity,
-                    child:
-                        _imageUrl == null
-                            ? const Center(child: Text('Προσθήκη εικόνας'))
-                            : ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.file(
-                                File(_imageUrl!),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter preparation time';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                const Text('Difficulty'),
+                Row(
+                  children: List.generate(5, (index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _difficulty = index + 1; // Update difficulty
+                        });
+                      },
+                      child: Icon(
+                        index < _difficulty ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: const Text('Pick Image'),
+                ),
+                if (_imageUrl != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Image.file(
+                      File(_imageUrl!),
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Τίτλος',
-                  border: OutlineInputBorder(),
-                ),
-                validator:
-                    (value) => value!.isEmpty ? 'Συμπληρώστε τον τίτλο' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Περιγραφή',
-                  border: OutlineInputBorder(),
-                ),
-                validator:
-                    (value) =>
-                        value!.isEmpty ? 'Συμπληρώστε την περιγραφή' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _preparationTimeController,
-                decoration: const InputDecoration(
-                  labelText: 'Χρόνος προετοιμασίας',
-                  border: OutlineInputBorder(),
-                ),
-                validator:
-                    (value) => value!.isEmpty ? 'Συμπληρώστε το χρόνο' : null,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<int>(
-                value: _difficulty,
-                items:
-                    List.generate(5, (index) => index + 1)
-                        .map(
-                          (level) => DropdownMenuItem(
-                            value: level,
-                            child: Text('Δυσκολία $level'),
-                          ),
-                        )
-                        .toList(),
-                decoration: const InputDecoration(
-                  labelText: 'Δυσκολία',
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) => setState(() => _difficulty = value!),
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: ElevatedButton.icon(
+                const SizedBox(height: 16),
+                ElevatedButton(
                   onPressed: _saveRecipe,
-                  icon: const Icon(Icons.save),
-                  label: const Text('Αποθήκευση'),
+                  child: const Text('Save Recipe'),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

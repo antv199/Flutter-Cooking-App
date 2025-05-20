@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'classes/RecipeClass.dart';
-import 'widgets/Home/RecipeHomeCard.dart';
-import 'CreateRecipePage.dart';
-import 'RecipePage.dart' as RecipePageAlias;
+import 'classes/RecipeClass.dart'; // Import the Recipe class
+import 'widgets/Home/RecipeHomeCard.dart'; // Import the RecipeHomeCard widget
+import 'CreateRecipePage.dart'; // Import the CreateRecipePage class
+import 'RecipePage.dart' as RecipePageAlias; // Import the RecipePage class
 import 'widgets/RecipePage/RecipePage.dart';
 
 late Box<Recipe> recipeBox;
@@ -11,154 +11,130 @@ late Box<Recipe> recipeBox;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  Hive.registerAdapter(RecipeAdapter());
-  recipeBox = await Hive.openBox<Recipe>('recipes');
+  Hive.registerAdapter(RecipeAdapter()); // Register the Recipe adapter
+  recipeBox = await Hive.openBox<Recipe>(
+    'recipes',
+  ); // Open the Hive box globally
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const HomeScreen(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  bool _isDarkMode = false;
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-  void _toggleTheme(bool value) {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Recipe> recipes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecipes();
+  }
+
+  void _loadRecipes() {
     setState(() {
-      _isDarkMode = value;
+      recipes =
+          recipeBox.values.toList(); // Reload recipes from the global Hive box
+    });
+  }
+
+  void updateRating(int index, int newRating) {
+    setState(() {
+      recipes[index].rating = newRating;
+    });
+  }
+
+  void sortRecipes(String criteria) {
+    setState(() {
+      if (criteria == 'difficulty') {
+        recipes.sort((a, b) => a.difficulty.compareTo(b.difficulty));
+      } else if (criteria == 'rating') {
+        recipes.sort((a, b) => b.rating.compareTo(a.rating));
+      } else if (criteria == 'preparationTime') {
+        recipes.sort((a, b) => a.preparationTime.compareTo(b.preparationTime));
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Recipe App',
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        textTheme: const TextTheme(
-          headlineSmall: TextStyle(fontWeight: FontWeight.bold),
-          bodyMedium: TextStyle(fontSize: 16),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 4,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          ),
-        ),
-        cardTheme: CardTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 5,
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        ),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.dark,
-        ),
-      ),
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: RecipeHomePage(
-        onToggleTheme: _toggleTheme,
-        isDarkMode: _isDarkMode,
-      ),
-    );
-  }
-}
-
-class RecipeHomePage extends StatefulWidget {
-  final void Function(bool) onToggleTheme;
-  final bool isDarkMode;
-
-  const RecipeHomePage({
-    super.key,
-    required this.onToggleTheme,
-    required this.isDarkMode,
-  });
-
-  @override
-  State<RecipeHomePage> createState() => _RecipeHomePageState();
-}
-
-class _RecipeHomePageState extends State<RecipeHomePage> {
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Οι Συνταγές Μου'),
-        centerTitle: true,
+        title: const Text('Cooking Recipes'),
         actions: [
-          Switch(value: widget.isDarkMode, onChanged: widget.onToggleTheme),
+          PopupMenuButton<String>(
+            onSelected: sortRecipes,
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(
+                    value: 'difficulty',
+                    child: Text('Sort by Difficulty'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'rating',
+                    child: Text('Sort by Rating'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'preparationTime',
+                    child: Text('Sort by Preparation Time'),
+                  ),
+                ],
+          ),
         ],
       ),
-      body: ValueListenableBuilder(
-        valueListenable: recipeBox.listenable(),
-        builder: (context, Box<Recipe> box, _) {
-          if (box.values.isEmpty) {
-            return const Center(child: Text('Δεν υπάρχουν συνταγές ακόμα.'));
-          }
-          return ListView.builder(
-            itemCount: box.length,
-            itemBuilder: (context, index) {
-              final recipe = box.getAt(index);
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RecipePage(recipe: recipe!),
-                    ),
-                  );
-                },
-                child: RecipeHomeCard(
-                  recipe: recipe!,
-                  onDelete: () {
-                    setState(() {
-                      recipeBox.deleteAt(index);
-                    });
-                  },
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RecipePage(recipe: recipe!),
-                      ),
-                    );
-                  },
-                  onRatingChanged: (int rating) {
-                    setState(() {
-                      recipe.rating = rating;
-                      recipe.save();
-                    });
-                  },
+      body: ListView.builder(
+        itemCount: recipes.length,
+        itemBuilder: (context, index) {
+          final recipe = recipes[index];
+          return RecipeHomeCard(
+            recipe: recipe,
+            onDelete: () {
+              setState(() {
+                recipes.removeAt(index);
+              });
+            },
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecipePage(recipe: recipe),
                 ),
               );
+              _loadRecipes(); // Reload recipes after returning
+            },
+            onRatingChanged: (newRating) {
+              updateRating(index, newRating);
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const CreateRecipePage()),
+            MaterialPageRoute(builder: (context) => const CreateRecipePage()),
           );
+          _loadRecipes(); // Reload recipes after returning
         },
-        label: const Text('Νέα Συνταγή'),
-        icon: const Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
