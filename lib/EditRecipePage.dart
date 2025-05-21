@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:hive/hive.dart';
 import 'classes/RecipeClass.dart';
 import 'dart:io';
+import 'widgets/common/RecipeImage.dart';
 
 class EditRecipePage extends StatefulWidget {
   final Recipe recipe;
@@ -88,16 +89,11 @@ class _EditRecipePageState extends State<EditRecipePage> {
                   child: SizedBox(
                     height: 180,
                     width: double.infinity,
-                    child:
-                        _imageUrl == null
-                            ? const Center(child: Text('Προσθήκη εικόνας'))
-                            : ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.file(
-                                File(_imageUrl!),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                    child: RecipeImage(
+                      imageUrl: _imageUrl,
+                      width: double.infinity,
+                      height: 180,
+                    ),
                   ),
                 ),
               ),
