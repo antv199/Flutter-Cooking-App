@@ -101,7 +101,7 @@ class RecipeHomeCard extends StatelessWidget {
               Row(
                 children: List.generate(5, (index) {
                   return Icon(
-                    index < recipe.difficulty ? Icons.star : Icons.star_border,
+                    index < recipe.rating ? Icons.star : Icons.star_border,
                     color: Colors.amber,
                   );
                 }),
