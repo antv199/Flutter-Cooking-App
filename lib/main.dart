@@ -3,7 +3,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'classes/RecipeClass.dart'; // Import the Recipe class
 import 'widgets/Home/RecipeHomeCard.dart'; // Import the RecipeHomeCard widget
 import 'CreateRecipePage.dart'; // Import the CreateRecipePage class
-import 'RecipePage.dart' as RecipePageAlias; // Import the RecipePage class
 import 'widgets/RecipePage/RecipePage.dart';
 
 late Box<Recipe> recipeBox;
