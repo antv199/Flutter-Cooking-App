@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../classes/RecipeClass.dart';
 import '../../EditRecipePage.dart'; // Import the EditRecipePage
+import '../common/RecipeImage.dart';
 
 class RecipePage extends StatefulWidget {
   final Recipe recipe;
@@ -39,23 +40,10 @@ class _RecipePageState extends State<RecipePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CachedNetworkImage(
-                imageUrl:
-                    widget.recipe.imageUrl.isNotEmpty
-                        ? widget.recipe.imageUrl
-                        : 'https://via.placeholder.com/150', // Fallback URL
-                placeholder:
-                    (context, url) =>
-                        const Center(child: CircularProgressIndicator()),
-                errorWidget:
-                    (context, url, error) => const Icon(
-                      Icons.broken_image,
-                      size: 100,
-                      color: Colors.grey,
-                    ),
-                height: 200,
+              RecipeImage(
+                imageUrl: widget.recipe.imageUrl,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                height: 200,
               ),
               const SizedBox(height: 16),
               Text(
@@ -102,7 +90,10 @@ class _RecipePageState extends State<RecipePage> {
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => EditRecipePage(recipe: widget.recipe, index: widget.recipe.key as int),
+                          (context) => EditRecipePage(
+                            recipe: widget.recipe,
+                            index: widget.recipe.key as int,
+                          ),
                     ),
                   ).then((_) {
                     setState(() {}); // Refresh the page after returning

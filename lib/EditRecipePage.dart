@@ -58,7 +58,9 @@ class _EditRecipePageState extends State<EditRecipePage> {
       );
 
       final box = Hive.box<Recipe>('recipes');
-      box.putAt(widget.index, updatedRecipe);
+      if (widget.index >= 0 && widget.index < box.length) {
+        box.putAt(widget.index, updatedRecipe);
+      }
       Navigator.pop(context);
     }
   }

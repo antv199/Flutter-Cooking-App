@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
+          seedColor: Colors.purple,
           brightness: Brightness.dark,
         ),
       ),
@@ -97,6 +97,7 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Οι Συνταγές Μου'),
         centerTitle: true,
@@ -110,21 +111,18 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
           if (box.values.isEmpty) {
             return const Center(child: Text('Δεν υπάρχουν συνταγές ακόμα.'));
           }
-          return ListView.builder(
-            itemCount: box.length,
-            itemBuilder: (context, index) {
-              final recipe = box.getAt(index);
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RecipePage(recipe: recipe),
-                    ),
-                  );
-                },
-                child: RecipeHomeCard(
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 0,
+              vertical: 0,
+            ), // Adjust as needed
+            child: ListView.builder(
+              itemCount: box.length,
+              itemBuilder: (context, index) {
+                final recipe = box.getAt(index);
+                return RecipeHomeCard(
                   recipe: recipe!,
+                  index: index, // <-- pass this index
                   onDelete: () {
                     setState(() {
                       recipeBox.deleteAt(index);
@@ -144,9 +142,9 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
                       recipe.save();
                     });
                   },
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),

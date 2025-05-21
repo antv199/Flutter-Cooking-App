@@ -3,9 +3,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../classes/RecipeClass.dart'; // Import the Recipe class
 import '../RecipePage/RecipePage.dart'; // <-- Correct import
 import '../../EditRecipePage.dart'; // Import the EditRecipePage
+import '../../widgets/common/RecipeImage.dart';
 
 class RecipeHomeCard extends StatelessWidget {
   final Recipe recipe;
+  final int index;
   final VoidCallback onDelete;
   final VoidCallback onTap;
   final ValueChanged<int> onRatingChanged; // Callback for rating change
@@ -13,6 +15,7 @@ class RecipeHomeCard extends StatelessWidget {
   const RecipeHomeCard({
     super.key,
     required this.recipe,
+    required this.index,
     required this.onDelete,
     required this.onTap,
     required this.onRatingChanged,
@@ -28,7 +31,8 @@ class RecipeHomeCard extends StatelessWidget {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditRecipePage(recipe: recipe, index: 0),
+              builder:
+                  (context) => EditRecipePage(recipe: recipe, index: index),
             ),
           );
           return false; // Prevent the card from being dismissed
@@ -85,14 +89,10 @@ class RecipeHomeCard extends StatelessWidget {
       ),
       child: Card(
         child: ListTile(
-          leading: CachedNetworkImage(
+          leading: RecipeImage(
             imageUrl: recipe.imageUrl,
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            errorWidget:
-                (context, url, error) => const Icon(Icons.broken_image),
             width: 50,
             height: 50,
-            fit: BoxFit.cover,
           ),
           title: Text(recipe.title),
           subtitle: Column(
@@ -116,7 +116,7 @@ class RecipeHomeCard extends StatelessWidget {
                 builder: (context) => RecipePage(recipe: recipe),
               ),
             );
-            onDelete(); // Trigger a refresh by removing and re-adding the recipe
+            // Do NOT call onDelete here!
           },
         ),
       ),
