@@ -1,6 +1,9 @@
 # cooking_app
 
-A new Flutter project.
+A new Flutter University project.
+
+ΑΝΤΩΝΙΟΣ ΒΑΤΟΥΣΗΣ 2404<br/>
+ΑΘΑΝΑΣΙΟΣ ΦΩΤΟΠΟΥΛΟΣ 2614
 
 ## Getting Started
 
