@@ -94,6 +94,27 @@ class RecipeHomePage extends StatefulWidget {
 }
 
 class _RecipeHomePageState extends State<RecipeHomePage> {
+  String _sortBy = 'default';
+
+  List<Recipe> _getSortedRecipes(Box<Recipe> box) {
+    final recipes = box.values.toList();
+    switch (_sortBy) {
+      case 'difficulty':
+        recipes.sort((a, b) => a.difficulty.compareTo(b.difficulty));
+        break;
+      case 'rating':
+        recipes.sort((a, b) => b.rating.compareTo(a.rating));
+        break;
+      case 'preparationTime':
+        recipes.sort((a, b) => a.preparationTime.compareTo(b.preparationTime));
+        break;
+      default:
+        // No sorting, keep as is
+        break;
+    }
+    return recipes;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,6 +122,29 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
       appBar: AppBar(
         title: const Text('Οι Συνταγές Μου'),
         centerTitle: true,
+        leading: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            setState(() {
+              _sortBy = value;
+            });
+          },
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(
+                  value: 'difficulty',
+                  child: Text('Ταξινόμηση ανά Δυσκολία'),
+                ),
+                const PopupMenuItem(
+                  value: 'rating',
+                  child: Text('Ταξινόμηση ανά Βαθμολογία'),
+                ),
+                const PopupMenuItem(
+                  value: 'preparationTime',
+                  child: Text('Ταξινόμηση ανά Χρόνο Προετοιμασίας'),
+                ),
+              ],
+        ),
         actions: [
           Switch(value: widget.isDarkMode, onChanged: widget.onToggleTheme),
         ],
@@ -111,21 +155,19 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
           if (box.values.isEmpty) {
             return const Center(child: Text('Δεν υπάρχουν συνταγές ακόμα.'));
           }
+          final recipes = _getSortedRecipes(box);
           return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 0,
-              vertical: 0,
-            ), // Adjust as needed
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             child: ListView.builder(
-              itemCount: box.length,
+              itemCount: recipes.length,
               itemBuilder: (context, index) {
-                final recipe = box.getAt(index);
+                final recipe = recipes[index];
                 return RecipeHomeCard(
-                  recipe: recipe!,
-                  index: index, // <-- pass this index
+                  recipe: recipe,
+                  index: index,
                   onDelete: () {
                     setState(() {
-                      recipeBox.deleteAt(index);
+                      recipeBox.deleteAt(recipe.key as int);
                     });
                   },
                   onTap: () {
@@ -139,6 +181,12 @@ class _RecipeHomePageState extends State<RecipeHomePage> {
                   onRatingChanged: (int rating) {
                     setState(() {
                       recipe.rating = rating;
+                      recipe.save();
+                    });
+                  },
+                  onDifficultyChanged: (int difficulty) {
+                    setState(() {
+                      recipe.difficulty = difficulty;
                       recipe.save();
                     });
                   },

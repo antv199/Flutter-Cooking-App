@@ -54,9 +54,21 @@ class _RecipePageState extends State<RecipePage> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                'Δυσκολία: ${widget.recipe.difficulty}',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              Row(
+                children: [
+                  const Text(
+                    'Δυσκολία: ',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  ...List.generate(5, (index) {
+                    return Icon(
+                      index < widget.recipe.difficulty
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: Colors.blueGrey,
+                    );
+                  }),
+                ],
               ),
               const SizedBox(height: 8),
               Text(

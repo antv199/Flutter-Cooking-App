@@ -11,6 +11,7 @@ class RecipeHomeCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onTap;
   final ValueChanged<int> onRatingChanged; // Callback for rating change
+  final ValueChanged<int> onDifficultyChanged; // Add this
 
   const RecipeHomeCard({
     super.key,
@@ -19,6 +20,7 @@ class RecipeHomeCard extends StatelessWidget {
     required this.onDelete,
     required this.onTap,
     required this.onRatingChanged,
+    required this.onDifficultyChanged, // Add this
   });
 
   @override
@@ -88,7 +90,15 @@ class RecipeHomeCard extends StatelessWidget {
         ),
       ),
       child: Card(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 4,
+        ), // Make card a bit taller
         child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 20,
+            horizontal: 14,
+          ), // More space
           leading: RecipeImage(
             imageUrl: recipe.imageUrl,
             width: 50,
@@ -99,27 +109,99 @@ class RecipeHomeCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                children: List.generate(5, (index) {
-                  return Icon(
-                    index < recipe.rating ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                  );
-                }),
+                children: [
+                  const Text(
+                    'Βαθμολογία: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  ...List.generate(5, (starIndex) {
+                    return GestureDetector(
+                      onTap: () => onRatingChanged(starIndex + 1),
+                      child: Icon(
+                        starIndex < recipe.rating
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.amber,
+                        size: 24,
+                      ),
+                    );
+                  }),
+                ],
               ),
-              Text('Difficulty: ${recipe.difficulty}/5'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Text(
+                    'Δυσκολία: ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  ...List.generate(5, (starIndex) {
+                    return GestureDetector(
+                      onTap: () => onDifficultyChanged(starIndex + 1),
+                      child: Icon(
+                        starIndex < recipe.difficulty
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.blueGrey,
+                        size: 24,
+                      ),
+                    );
+                  }),
+                ],
+              ),
             ],
           ),
-          onTap: () async {
-            await Navigator.push(
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+}
+
+class RecipeHome extends StatefulWidget {
+  @override
+  _RecipeHomeState createState() => _RecipeHomeState();
+}
+
+class _RecipeHomeState extends State<RecipeHome> {
+  List<Recipe> recipes = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: recipes.length,
+      itemBuilder: (context, index) {
+        final recipe = recipes[index];
+        return RecipeHomeCard(
+          recipe: recipe,
+          index: index,
+          onDelete: () {
+            setState(() {
+              recipes.removeAt(index);
+            });
+          },
+          onTap: () {
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => RecipePage(recipe: recipe),
               ),
             );
-            // Do NOT call onDelete here!
           },
-        ),
-      ),
+          onRatingChanged: (int rating) {
+            setState(() {
+              recipe.rating = rating;
+              recipe.save();
+            });
+          },
+          onDifficultyChanged: (int difficulty) {
+            setState(() {
+              recipe.difficulty = difficulty;
+              recipe.save();
+            });
+          },
+        );
+      },
     );
   }
 }
