@@ -24,6 +24,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _preparationTimeController;
+  late TextEditingController _instructionsController;
   String? _imageUrl;
   int _difficulty = 1;
 
@@ -36,6 +37,9 @@ class _EditRecipePageState extends State<EditRecipePage> {
     );
     _preparationTimeController = TextEditingController(
       text: widget.recipe.preparationTime.toString(),
+    );
+    _instructionsController = TextEditingController(
+      text: widget.recipe.instructions,
     );
     _imageUrl = widget.recipe.imageUrl;
     _difficulty = widget.recipe.difficulty;
@@ -62,6 +66,7 @@ class _EditRecipePageState extends State<EditRecipePage> {
         recipe.preparationTime = int.parse(_preparationTimeController.text);
         recipe.difficulty = _difficulty;
         recipe.imageUrl = _imageUrl ?? '';
+        recipe.instructions = _instructionsController.text;
         await recipe.save();
       }
       Navigator.pop(context);
@@ -128,6 +133,18 @@ class _EditRecipePageState extends State<EditRecipePage> {
                 ),
                 validator:
                     (value) => value!.isEmpty ? 'Συμπληρώστε το χρόνο' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _instructionsController,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  labelText: 'Οδηγίες',
+                  border: OutlineInputBorder(),
+                ),
+                validator:
+                    (value) =>
+                        value!.isEmpty ? 'Συμπληρώστε τις οδηγίες' : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(

@@ -22,6 +22,9 @@ class Recipe extends HiveObject {
   @HiveField(5)
   int rating;
 
+  @HiveField(6)
+  String instructions; // <-- Add this line
+
   Recipe({
     required this.title,
     required this.description,
@@ -29,5 +32,6 @@ class Recipe extends HiveObject {
     required this.difficulty,
     required this.imageUrl,
     this.rating = 0,
+    required this.instructions, // <-- Add this line
   });
 }

@@ -16,6 +16,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _preparationTimeController = TextEditingController();
+  final _instructionsController = TextEditingController();
   String? _imageUrl;
   int _difficulty = 1; // Default difficulty level
 
@@ -38,6 +39,8 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
         preparationTime: int.parse(_preparationTimeController.text),
         difficulty: _difficulty,
         imageUrl: _imageUrl ?? '',
+        instructions:
+            _instructionsController.text,
       );
 
       final recipeBox = Hive.box<Recipe>('recipes');
@@ -96,6 +99,18 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _instructionsController,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText: 'Οδηγίες',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Συμπληρώστε τις οδηγίες' : null,
                 ),
                 const SizedBox(height: 16),
                 const Text('Δυσκολία'),

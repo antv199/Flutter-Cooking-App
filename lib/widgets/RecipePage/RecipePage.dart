@@ -69,6 +69,15 @@ class _RecipePageState extends State<RecipePage> {
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
+              const Text(
+                'Οδηγίες:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                widget.recipe.instructions,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
               const Text('Βαθμολογία:'),
               Row(
                 children: List.generate(5, (index) {
