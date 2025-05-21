@@ -6,9 +6,13 @@ import 'dart:io';
 
 class EditRecipePage extends StatefulWidget {
   final Recipe recipe;
-  final int index;
+  final dynamic recipeKey; // Hive keys are dynamic
 
-  const EditRecipePage({super.key, required this.recipe, required this.index});
+  const EditRecipePage({
+    super.key,
+    required this.recipe,
+    required this.recipeKey,
+  });
 
   @override
   _EditRecipePageState createState() => _EditRecipePageState();
@@ -47,19 +51,17 @@ class _EditRecipePageState extends State<EditRecipePage> {
     }
   }
 
-  void _saveChanges() {
+  void _saveChanges() async {
     if (_formKey.currentState!.validate()) {
-      final updatedRecipe = Recipe(
-        title: _titleController.text,
-        description: _descriptionController.text,
-        preparationTime: int.parse(_preparationTimeController.text),
-        difficulty: _difficulty,
-        imageUrl: _imageUrl!,
-      );
-
       final box = Hive.box<Recipe>('recipes');
-      if (widget.index >= 0 && widget.index < box.length) {
-        box.putAt(widget.index, updatedRecipe);
+      final recipe = box.get(widget.recipeKey); // Use key, not index!
+      if (recipe != null) {
+        recipe.title = _titleController.text;
+        recipe.description = _descriptionController.text;
+        recipe.preparationTime = int.parse(_preparationTimeController.text);
+        recipe.difficulty = _difficulty;
+        recipe.imageUrl = _imageUrl ?? '';
+        await recipe.save();
       }
       Navigator.pop(context);
     }

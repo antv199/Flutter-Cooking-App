@@ -32,7 +32,7 @@ class RecipeHomeCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder:
-                  (context) => EditRecipePage(recipe: recipe, index: index),
+                  (context) => EditRecipePage(recipe: recipe, recipeKey: index),
             ),
           );
           return false; // Prevent the card from being dismissed

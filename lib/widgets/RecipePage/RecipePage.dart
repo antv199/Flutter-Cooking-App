@@ -55,12 +55,12 @@ class _RecipePageState extends State<RecipePage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Difficulty: ${widget.recipe.difficulty}',
+                'Δυσκολία: ${widget.recipe.difficulty}',
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
               const SizedBox(height: 8),
               Text(
-                'Preparation Time: ${widget.recipe.preparationTime} minutes',
+                'Χρόνος Προετοιμασίας: ${widget.recipe.preparationTime} λεπτά',
                 style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
               const SizedBox(height: 16),
@@ -69,7 +69,7 @@ class _RecipePageState extends State<RecipePage> {
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
-              const Text('Rating:'),
+              const Text('Βαθμολογία:'),
               Row(
                 children: List.generate(5, (index) {
                   return GestureDetector(
@@ -92,14 +92,14 @@ class _RecipePageState extends State<RecipePage> {
                       builder:
                           (context) => EditRecipePage(
                             recipe: widget.recipe,
-                            index: widget.recipe.key as int,
+                            recipeKey: widget.recipe.key as int,
                           ),
                     ),
                   ).then((_) {
                     setState(() {}); // Refresh the page after returning
                   });
                 },
-                child: const Text('Edit Recipe'),
+                child: const Text('Επεξεργασία Συνταγής'),
               ),
             ],
           ),

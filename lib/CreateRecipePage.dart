@@ -50,7 +50,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Recipe')),
+      appBar: AppBar(title: const Text('Δημιουργία Συνταγής')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -61,10 +61,10 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
               children: [
                 TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
+                  decoration: const InputDecoration(labelText: 'Τίτλος'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
+                      return 'Παρακαλώ εισάγετε τίτλο';
                     }
                     return null;
                   },
@@ -72,10 +72,10 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
+                  decoration: const InputDecoration(labelText: 'Περιγραφή'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a description';
+                      return 'Παρακαλώ εισάγετε περιγραφή';
                     }
                     return null;
                   },
@@ -84,21 +84,21 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                 TextFormField(
                   controller: _preparationTimeController,
                   decoration: const InputDecoration(
-                    labelText: 'Preparation Time (minutes)',
+                    labelText: 'Χρόνος Προετοιμασίας (λεπτά)',
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter preparation time';
+                      return 'Παρακαλώ εισάγετε χρόνο προετοιμασίας';
                     }
                     if (int.tryParse(value) == null) {
-                      return 'Please enter a valid number';
+                      return 'Παρακαλώ εισάγετε έγκυρο αριθμό';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
-                const Text('Difficulty'),
+                const Text('Δυσκολία'),
                 Row(
                   children: List.generate(5, (index) {
                     return GestureDetector(
@@ -117,7 +117,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _pickImage,
-                  child: const Text('Pick Image'),
+                  child: const Text('Επιλέξτε Εικόνα'),
                 ),
                 if (_imageUrl != null)
                   Padding(
@@ -131,7 +131,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _saveRecipe,
-                  child: const Text('Save Recipe'),
+                  child: const Text('Αποθήκευση Συνταγής'),
                 ),
               ],
             ),
