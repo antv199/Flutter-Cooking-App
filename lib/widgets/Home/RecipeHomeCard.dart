@@ -28,7 +28,7 @@ class RecipeHomeCard extends StatelessWidget {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditRecipePage(recipe: recipe),
+              builder: (context) => EditRecipePage(recipe: recipe, index: 0),
             ),
           );
           return false; // Prevent the card from being dismissed

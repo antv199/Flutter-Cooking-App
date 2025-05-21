@@ -102,7 +102,7 @@ class _RecipePageState extends State<RecipePage> {
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => EditRecipePage(recipe: widget.recipe),
+                          (context) => EditRecipePage(recipe: widget.recipe, index: widget.recipe.key as int),
                     ),
                   ).then((_) {
                     setState(() {}); // Refresh the page after returning
